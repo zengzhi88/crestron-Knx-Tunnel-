@@ -1,0 +1,180 @@
+[BEGIN]
+  Version=1
+[END]
+[BEGIN]
+  ObjTp=FSgntr
+  Sgntr=UserSPlus
+  RelVrs=1
+  IntStrVrs=1
+  SPlusVrs=4.06.00
+  CrossCplrVrs=NOT INSTALLED
+[END]
+[BEGIN]
+  ObjTp=Hd
+  Cmn1=||4以xx / yy / zz格式输入组地址   \\    addr_1bit：开关组地址\\
+  Cmn2=||4addr_4bit：4bit的相对调光组地址\\    addr_1byte：调光值组地址\\
+  Cmn3=||4fb_addr_1byte：调光值反馈组地址\\    以xx / yy / zz：len：val格式获取输入数据
+  Cmn4=\\    并在地址匹配时触发开/关/调光/反馈\\    联系人：曾志--18538535086\\
+[END]
+[BEGIN]
+  ObjTp=Symbol
+  Exclusions=1,19,20,21,88,89,167,168,179,213,214,215,216,217,225,226,248,249,266,267,310,362,378,380,405,407,408,409,478,522,537,554,586,590,611,624,718,756,767,830,841,842,854,883,955,1032,1062,1079,1128,1129,1134,1140,1157,1158,1195,1199,1220,1221,1222,1223,1299,1348,1349,1439,1472,1473,1499,1746,1803,1975,2229,2354,2514,2523,2532,2706,2707,3235,3236,3427,3454,3567,3568,3601,3602,3708,3902,3903,3912,3918,3925,3926,4206,4207,
+  Exclusions_CDS=5
+  Inclusions_CDS=6,7
+  Name=KNX_dimmer_light
+  SmplCName=KNX_dimmer_light.usp
+  Code=1
+  SysRev5=4.000
+  SMWRev=2.02.05
+  InputCue1=On_tp
+  InputSigType1=Digital
+  InputCue2=Off_tp
+  InputSigType2=Digital
+  InputCue3=toggle_tp
+  InputSigType3=Digital
+  InputCue4=[~UNUSED~]
+  InputSigType4=Digital
+  InputCue5=Up_tp
+  InputSigType5=Digital
+  InputCue6=Down_tp
+  InputSigType6=Digital
+  OutputCue1=On_FB
+  OutputSigType1=Digital
+  OutputCue2=Off_FB
+  OutputSigType2=Digital
+  InputList2Cue1=[~UNUSED~]
+  InputList2SigType1=Analog
+  InputList2Cue2=Val_tp
+  InputList2SigType2=Analog
+  InputList2Cue3=[~UNUSED~]
+  InputList2SigType3=Serial
+  InputList2Cue4=FROM_RX$
+  InputList2SigType4=Serial
+  OutputList2Cue1=[~UNUSED~]
+  OutputList2SigType1=Analog
+  OutputList2Cue2=Val_fb
+  OutputList2SigType2=Analog
+  OutputList2Cue3=[~UNUSED~]
+  OutputList2SigType3=Serial
+  OutputList2Cue4=TextVal_FB
+  OutputList2SigType4=Serial
+  OutputList2Cue5=[~UNUSED~]
+  OutputList2SigType5=Serial
+  OutputList2Cue6=[~UNUSED~]
+  OutputList2SigType6=Serial
+  OutputList2Cue7=[~UNUSED~]
+  OutputList2SigType7=Serial
+  OutputList2Cue8=To_KNX_TX$
+  OutputList2SigType8=Serial
+  ParamCue1=[Reference Name]
+  ParamCue2=[~UNUSED~]
+  ParamSigType2=Constant
+  ParamCue3=[~UNUSED~]
+  ParamSigType3=Constant
+  ParamCue4=[~UNUSED~]
+  ParamSigType4=Constant
+  ParamCue5=[~UNUSED~]
+  ParamSigType5=Constant
+  ParamCue6=[~UNUSED~]
+  ParamSigType6=Constant
+  ParamCue7=[~UNUSED~]
+  ParamSigType7=Constant
+  ParamCue8=[~UNUSED~]
+  ParamSigType8=Constant
+  ParamCue9=[~UNUSED~]
+  ParamSigType9=Constant
+  ParamCue10=[~UNUSED~]
+  ParamSigType10=Constant
+  ParamCue11=[~UNUSED~]
+  ParamSigType11=Constant
+  ParamCue12=addr_1bit
+  ParamSigType12=String
+  ParamCue13=addr_4bit
+  ParamSigType13=String
+  ParamCue14=addr_1byte
+  ParamSigType14=String
+  ParamCue15=fb_addr_1byte
+  ParamSigType15=String
+  MinVariableInputs=6
+  MaxVariableInputs=6
+  MinVariableInputsList2=4
+  MaxVariableInputsList2=4
+  MinVariableOutputs=2
+  MaxVariableOutputs=2
+  MinVariableOutputsList2=8
+  MaxVariableOutputsList2=8
+  MinVariableParams=14
+  MaxVariableParams=14
+  Expand=expand_separately
+  Expand2=expand_separately
+  ProgramTree=Logic
+  SymbolTree=46
+  UserSymTreeName=KNX
+  Hint=
+  PdfHelp=
+  HelpID= 
+  Render=4
+  Smpl-C=16
+  CompilerCode=-48
+  CompilerParamCode=27
+  CompilerParamCode5=14
+  NumFixedParams=1
+  Pp1=1
+  Pp12=12
+  Pp13=13
+  Pp14=14
+  Pp15=15
+  MPp=15
+  NVStorage=10
+  ParamSigType1=String
+  SmplCInputCue1=o#
+  SmplCOutputCue1=i#
+  SmplCInputList2Cue1=an#
+  SmplCOutputList2Cue1=ai#
+  SPlus2CompiledName=S2_KNX_dimmer_light
+  SymJam=NonExclusive
+  FileName=KNX_dimmer_light.ush
+  SIMPLPlusModuleEncoding=0
+[END]
+[BEGIN]
+  ObjTp=Dp
+  H=1
+  Tp=1
+  NoS=False
+[END]
+[BEGIN]
+  ObjTp=Dp
+  H=12
+  Tp=1
+  HD=True
+  DV=
+  NoS=False
+  VVS=0
+[END]
+[BEGIN]
+  ObjTp=Dp
+  H=13
+  Tp=1
+  HD=True
+  DV=
+  NoS=False
+  VVS=0
+[END]
+[BEGIN]
+  ObjTp=Dp
+  H=14
+  Tp=1
+  HD=True
+  DV=
+  NoS=False
+  VVS=0
+[END]
+[BEGIN]
+  ObjTp=Dp
+  H=15
+  Tp=1
+  HD=True
+  DV=
+  NoS=False
+  VVS=0
+[END]

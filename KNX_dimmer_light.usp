@@ -1,0 +1,223 @@
+/*******************************************************************************************
+  SIMPL+ Module Information
+  (Fill in comments below)
+*******************************************************************************************/
+/*
+Dealer Name:
+System Name:
+System Number:
+Programmer:
+Comments:
+*/
+
+/*******************************************************************************************
+  Compiler Directives
+  (Uncomment and declare compiler directives as needed)
+*******************************************************************************************/
+// #ENABLE_DYNAMIC
+// #SYMBOL_NAME ""
+// #HINT ""
+// #DEFINE_CONSTANT
+// #CATEGORY "" 
+#CATEGORY "46" "KNX" // Custom
+// #PRINT_TO_TRACE
+// #DIGITAL_EXPAND 
+// #ANALOG_SERIAL_EXPAND 
+// #OUTPUT_SHIFT 
+// #HELP_PDF_FILE ""
+#DEFAULT_VOLATILE
+#ENABLE_STACK_CHECKING
+#ENABLE_TRACE
+// #ENCODING_ASCII
+// #ENCODING_UTF16
+// #ENCODING_INHERIT_FROM_PARENT
+// #ENCODING_INHERIT_FROM_PROGRAM
+
+#HELP_BEGIN
+    以xx / yy / zz格式输入组地址   
+    addr_1bit：开关组地址
+    addr_4bit：4bit的相对调光组地址
+    addr_1byte：调光值组地址
+    fb_addr_1byte：调光值反馈组地址
+    以xx / yy / zz：len：val格式获取输入数据
+    并在地址匹配时触发开/关/调光/反馈
+    联系人：曾志--18538535086
+
+#HELP_END
+
+/*******************************************************************************************
+  DIGITAL, ANALOG and SERIAL INPUTS and OUTPUTS
+  (Uncomment and declare inputs and outputs as needed)
+*******************************************************************************************/
+DIGITAL_INPUT 	On_tp;			       DIGITAL_OUTPUT On_FB;
+DIGITAL_INPUT	Off_tp;	               DIGITAL_OUTPUT Off_FB;
+DIGITAL_INPUT	toggle_tp;	    
+DIGITAL_INPUT   _skip_,Up_tp;
+DIGITAL_INPUT   Down_tp;               ANALOG_OUTPUT _skip_,Val_fb;
+ANALOG_INPUT 	_skip_,Val_tp;         STRING_OUTPUT _skip_,TextVal_FB;
+STRING_INPUT 	_skip_,FROM_RX$[64];   STRING_OUTPUT _skip_,_skip_,_skip_,To_KNX_TX$;
+
+/*******************************************************************************************
+  Parameters
+  (Uncomment and declare parameters as needed)
+*******************************************************************************************/
+// INTEGER_PARAMETER
+// SIGNED_INTEGER_PARAMETER
+// LONG_INTEGER_PARAMETER
+// SIGNED_LONG_INTEGER_PARAMETER
+STRING_PARAMETER _skip_,_skip_,_skip_,_skip_,_skip_,_skip_,_skip_,_skip_,_skip_,_skip_,addr_1bit[9],addr_4bit[9],addr_1byte[9],fb_addr_1byte[9];
+
+/*******************************************************************************************
+  Parameter Properties
+  (Uncomment and declare parameter properties as needed)
+*******************************************************************************************/
+#BEGIN_PARAMETER_PROPERTIES addr_1bit,addr_4bit,addr_1byte,fb_addr_1byte
+   propDefaultValue="";
+#END_PARAMETER_PROPERTIES
+
+STRING Prefix_1bit[14];
+//INTEGER Prefix_1bitLen;
+
+STRING Prefix_4bit[14];
+ 
+STRING Prefix_1byte[14];
+
+STRING Prefix_1byte_fb[14];
+INTEGER Prefix_1byte_fbLen;
+
+
+
+
+
+PUSH On_tp
+{
+	To_KNX_TX$ = Prefix_1bit + "01;";
+    On_FB = on;
+    Off_FB = off;
+}
+
+PUSH Off_tp
+{
+	To_KNX_TX$ = Prefix_1bit + "00;";
+    On_FB = off;
+    Off_FB = on;
+}
+
+PUSH toggle_tp
+{
+    if(On_FB = 0)
+     {
+      To_KNX_TX$ = Prefix_1bit + "01;";
+      On_FB = on;
+      Off_FB = off;
+     }
+	else 
+      {
+       To_KNX_TX$ = Prefix_1bit + "00;";
+       On_FB = off;
+       Off_FB = on;
+       }  
+
+}
+
+CHANGE Up_tp
+{
+	if( Up_tp = 1 )
+		To_KNX_TX$ = Prefix_4bit + "09;";
+	else if( Down_tp = 0 )
+		To_KNX_TX$ = Prefix_4bit + "00;";
+}
+
+CHANGE Down_tp
+{
+	if( Down_tp = 1 )
+		To_KNX_TX$ = Prefix_4bit + "01;";
+	else if( Up_tp = 0 )
+		To_KNX_TX$ = Prefix_4bit + "00;";
+}
+ 
+
+CHANGE Val_tp
+{
+
+	makestring(To_KNX_TX$,"%s%02X;",Prefix_1byte,Val_tp/256);
+}
+
+
+CHANGE FROM_RX$
+{
+	INTEGER pos;
+	STRING from_rx[64];
+
+	from_rx = FROM_RX$;
+	if( len(from_rx)<Prefix_1byte_fbLen+2 )
+		return;
+	pos = Find(Prefix_1byte_fb,from_rx);
+	if(pos = 1)
+	{
+		pos = HexToSI(mid(from_rx,Prefix_1byte_fbLen+1,2));
+		On_FB = pos;
+		Off_FB = !pos;
+		Val_FB = pos*256;
+		pos = pos*100/255;
+		TextVal_FB = itoa(pos) + "%";
+
+	}
+
+ /*
+        pos = HexToSI(right(from_rx,2));
+        On_FB = pos;
+		Off_FB = !pos;
+		Val_FB = pos*256;
+		pos = pos*100/255;
+		TextVal_FB = itoa(pos) + "%";
+*/	
+}
+/*
+THREADSAFE CHANGE FROM_RX$
+{
+	INTEGER pos;
+	STRING from_rx[64];
+     ind(Prefix_1bit_fb,from_rx);
+	if(pos = 1)
+	{
+
+	from_rx = FROM_RX$;
+
+	if( len(from_rx) < Prefix_1bit_fbLen + 2 )
+		return;                                                 
+
+	pos = F		pos = ato(miid(from_rx,Prefix_1bit_fbLen+1,2));
+		On_FB = pos;
+		Off_FB = !pos;
+	}	
+}
+*/
+/*******************************************************************************************
+  Main()
+  Uncomment and place one-time startup code here
+  (This code will get called when the system starts up)
+*******************************************************************************************/
+Function Main()
+{
+    // TODO:  Add code here
+    // Initialize declared global and local variables/arrays as needed.
+
+    WaitForInitializationComplete();
+	Prefix_1bit = addr_1bit + ":1:";
+//	Prefix_1bitLen = len(Prefix_1bit);
+
+    Prefix_4bit = addr_4bit + ":1:";
+
+    Prefix_1byte = addr_1byte + ":2:";
+
+    Prefix_1byte_fb = fb_addr_1byte + ":2:";
+	Prefix_1byte_fbLen = len(Prefix_1byte_fb);
+     
+    delay(5000);
+    To_KNX_TX$ = fb_addr_1byte + ";";
+
+
+
+}
+

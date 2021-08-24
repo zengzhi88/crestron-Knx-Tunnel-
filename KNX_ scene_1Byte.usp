@@ -1,0 +1,132 @@
+/*******************************************************************************************
+  SIMPL+ Module Information
+  (Fill in comments below)
+*******************************************************************************************/
+/*
+Dealer Name:
+System Name:
+System Number:
+Programmer:
+Comments:
+*/
+
+/*******************************************************************************************
+  Compiler Directives
+  (Uncomment and declare compiler directives as needed)
+*******************************************************************************************/
+// #ENABLE_DYNAMIC
+// #SYMBOL_NAME ""
+// #HINT ""
+// #DEFINE_CONSTANT
+// #CATEGORY "" 
+#CATEGORY "46" "KNX" // Custom
+// #PRINT_TO_TRACE
+// #DIGITAL_EXPAND 
+// #ANALOG_SERIAL_EXPAND 
+// #OUTPUT_SHIFT 
+// #HELP_PDF_FILE ""
+#DEFAULT_VOLATILE
+#ENABLE_STACK_CHECKING
+#ENABLE_TRACE
+// #ENCODING_ASCII
+// #ENCODING_UTF16
+// #ENCODING_INHERIT_FROM_PARENT
+// #ENCODING_INHERIT_FROM_PROGRAM
+
+#HELP_BEGIN
+    以xx / yy / zz格式输入组地址   
+    scene_addr：1byte场景组地址
+
+    num（1-64）对应实际场景号
+    
+
+    联系人：曾志--18538535086
+
+#HELP_END
+
+/*******************************************************************************************
+  DIGITAL, ANALOG and SERIAL INPUTS and OUTPUTS
+  (Uncomment and declare inputs and outputs as needed)
+*******************************************************************************************/
+DIGITAL_INPUT	_skip_,num[64,3];	DIGITAL_OUTPUT _skip_,num_fb[64,1];	
+STRING_INPUT 	_skip_,FROM_RX$[64];	STRING_OUTPUT _skip_,To_KNX_TX$;
+//ANALOG_INPUT 	Val_tp;			ANALOG_OUTPUT Val_fb;
+
+/*******************************************************************************************
+  Parameters
+  (Uncomment and declare parameters as needed)
+*******************************************************************************************/
+// INTEGER_PARAMETER
+// SIGNED_INTEGER_PARAMETER
+// LONG_INTEGER_PARAMETER 
+// SIGNED_LONG_INTEGER_PARAMETER
+//INTEGER num;
+STRING_PARAMETER scene_addr[9];
+
+/*******************************************************************************************
+  Parameter Properties
+  (Uncomment and declare parameter properties as needed)
+*******************************************************************************************/
+#BEGIN_PARAMETER_PROPERTIES scene_addr
+   propDefaultValue="";
+#END_PARAMETER_PROPERTIES
+
+STRING Prefix[12];
+INTEGER PrefixLen;
+
+
+PUSH num
+ { 
+    INTEGER i,j,k;
+    i=getlastmodifiedarrayindex ()- 1;
+    k=getlastmodifiedarrayindex ();
+     for (j=1 to 64)
+        {
+           num_fb[j]=0;    
+        }
+
+    makestring(To_KNX_TX$,"%s%02X;",Prefix,i);
+      num_fb[k]=1;
+     
+
+ }
+
+
+
+CHANGE FROM_RX$
+{
+	INTEGER pos,i;
+	STRING from_rx[64];
+
+	from_rx = FROM_RX$;
+
+	pos = Find(Prefix,from_rx);
+	if(pos = 1)
+	{   
+        for(i=1 to 64)
+         {
+           num_fb[i] = 0;
+         }
+		pos = HexToSI (mid(from_rx,PrefixLen+1,2))+1;
+        //num_fb[pos] = !pos;
+		num_fb[pos] = pos;
+	}	
+}
+
+
+/*******************************************************************************************
+  Main()
+  Uncomment and place one-time startup code here
+  (This code will get called when the system starts up)
+*******************************************************************************************/
+Function Main()
+{
+    // TODO:  Add code here
+    // Initialize declared global and local variables/arrays as needed.
+
+    WaitForInitializationComplete();
+	Prefix = scene_addr + ":2:";
+	PrefixLen = len(Prefix);
+
+}
+
