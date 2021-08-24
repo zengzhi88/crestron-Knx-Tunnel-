@@ -1,0 +1,156 @@
+/*******************************************************************************************
+  SIMPL+ Module Information
+  (Fill in comments below)
+*******************************************************************************************/
+/*
+Dealer Name:
+System Name:
+System Number:
+Programmer:
+Comments:
+*/
+
+/*******************************************************************************************
+  Compiler Directives
+  (Uncomment and declare compiler directives as needed)
+*******************************************************************************************/
+// #ENABLE_DYNAMIC
+// #SYMBOL_NAME ""
+// #HINT ""
+// #DEFINE_CONSTANT
+// #CATEGORY "" 
+#CATEGORY "46" "KNX" // Custom
+// #PRINT_TO_TRACE
+// #DIGITAL_EXPAND 
+// #ANALOG_SERIAL_EXPAND 
+// #OUTPUT_SHIFT 
+// #HELP_PDF_FILE ""
+#DEFAULT_VOLATILE
+#ENABLE_STACK_CHECKING
+#ENABLE_TRACE
+// #ENCODING_ASCII
+// #ENCODING_UTF16
+// #ENCODING_INHERIT_FROM_PARENT
+// #ENCODING_INHERIT_FROM_PROGRAM
+
+#HELP_BEGIN
+    addr/fb_addr:以xx / yy / zz 格式填写KNX组地址  
+    以xx / yy / zz：len：val格式获取输入数据
+    并在地址匹配时触发开/关反馈
+
+    联系人---曾志：18538535086
+#HELP_END
+
+/*******************************************************************************************
+  DIGITAL, ANALOG and SERIAL INPUTS and OUTPUTS
+  (Uncomment and declare inputs and outputs as needed)
+*******************************************************************************************/
+DIGITAL_INPUT 	On_tp;			  DIGITAL_OUTPUT On_FB,Off_FB;
+DIGITAL_INPUT	Off_tp;	
+DIGITAL_INPUT	toggle_tp;	    
+STRING_INPUT _skip_,FROM_RX$[64]; STRING_OUTPUT _skip_,_skip_,To_KNX_TX$;
+
+/*******************************************************************************************
+  Parameters
+  (Uncomment and declare parameters as needed)
+*******************************************************************************************/
+// INTEGER_PARAMETER
+// SIGNED_INTEGER_PARAMETER
+// LONG_INTEGER_PARAMETER
+// SIGNED_LONG_INTEGER_PARAMETER
+STRING_PARAMETER _skip_,_skip_,_skip_,_skip_,_skip_,addr[9],fb_addr[9];
+
+/*******************************************************************************************
+  Parameter Properties
+  (Uncomment and declare parameter properties as needed)
+*******************************************************************************************/
+#BEGIN_PARAMETER_PROPERTIES addr,fb_addr
+   propDefaultValue="";
+#END_PARAMETER_PROPERTIES
+
+STRING Prefix[14];
+
+STRING Prefix_fb[14];
+INTEGER PrefixLen_fb;
+
+
+PUSH On_tp
+{
+	To_KNX_TX$ = Prefix + "01;";
+    On_FB = on;
+    Off_FB = off;
+}
+
+PUSH Off_tp
+{
+	To_KNX_TX$ = Prefix + "00;";
+    On_FB = off;
+    Off_FB = on;
+}
+
+PUSH toggle_tp
+{
+    if(On_FB = 0)
+     {
+      To_KNX_TX$ = Prefix + "01;";
+      On_FB = on;
+      Off_FB = off;
+     }
+	else 
+      {
+       To_KNX_TX$ = Prefix + "00;";
+       On_FB = off;
+       Off_FB = on;
+       }  
+
+}
+
+
+THREADSAFE CHANGE FROM_RX$
+{
+	INTEGER pos;
+	STRING from_rx[64];
+/*
+	from_rx = FROM_RX$;
+    pos = atoi(right(from_rx,2));
+    	On_FB = pos;
+		Off_FB = !pos;
+
+ */
+
+
+
+	if( len(from_rx) < PrefixLen_fb + 2 )
+		return;
+
+	pos = Find(Prefix_fb,from_rx);
+	if(pos = 1)
+	{
+		pos = atoi(mid(from_rx,PrefixLen_fb+1,2));
+		On_FB = pos;
+		Off_FB = !pos;
+	}
+	
+}
+
+/*******************************************************************************************
+  Main()
+  Uncomment and place one-time startup code here
+  (This code will get called when the system starts up)
+*******************************************************************************************/
+Function Main()
+{
+    // TODO:  Add code here
+    // Initialize declared global and local variables/arrays as needed.
+
+    WaitForInitializationComplete();
+	Prefix = addr + ":1:";
+	
+
+    Prefix_fb = fb_addr + ":1:";
+	PrefixLen_fb = len(Prefix_fb);
+
+    delay(3000);
+    To_KNX_TX$ = fb_addr +";";
+}
+
